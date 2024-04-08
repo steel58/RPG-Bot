@@ -50,9 +50,9 @@ class DnDCharacter():
             "wis",
             ]
 
-    def __init__(self, name, _class, _str, dex, con, _int, wis, cha,
-                 skill_profs=[], prof_bonus=2, speed=30, level=1, hit_die=6,
-                 hit_die_count=1):
+    def __init__(self, name, _class="", _str=0, dex=0, con=0, _int=0, wis=0,
+                 cha=0, skill_profs=[], prof_bonus=2, speed=30, level=1,
+                 hit_die=6, hit_die_count=1):
 
         self.skill_prof = [0 for _ in range(18)]
         for i in skill_profs:
@@ -78,6 +78,11 @@ class DnDCharacter():
         self.hit_die_max = hit_die_count
         self.hit_die_curent = hit_die_count
 
+    def set_stat(self, stat_name, stat_value):
+        index = self.stat_index[stat_name]
+        self.stats[index] = stat_value
+        self.stat_bonus[index] = (stat_value - 10) // 2
+
 
 class DnDWeapon():
     def __init__(self, name, base_stat, damage_die,
@@ -89,6 +94,7 @@ class DnDWeapon():
         self.damgae_type = damage_type
 
 
-harper = DnDCharacter("Guelph", "Barbarian", 10, 13, 18, 9, 7, 17)
+if __name__ == "__main__":
+    harper = DnDCharacter("Guelph", "Barbarian", 10, 13, 18, 9, 7, 17)
 
-print(len(harper.skill_prof))
+    print(len(harper.skill_prof))
