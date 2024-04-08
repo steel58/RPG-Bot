@@ -18,7 +18,7 @@ client = discord.Client(intents=intents)
 async def on_ready():
     print(f'We have logged in as {client.user}')
 
-
+#this is a fake edit
 @client.event
 async def on_message(message):
     if message.author == client.user:
