@@ -3,6 +3,9 @@ import random
 import time
 
 
+file = open('key.txt', 'r')
+MY_TOKEN = file.read()
+file.close()
 
 intents = discord.Intents.default()
 intents.message_content = True
