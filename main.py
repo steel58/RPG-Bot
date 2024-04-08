@@ -18,6 +18,7 @@ client = discord.Client(intents=intents)
 async def on_ready():
     print(f'We have logged in as {client.user}')
 
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -29,7 +30,8 @@ async def on_message(message):
     if message.content.startswith('!new_character'):
         person = message.author
         chr_name = message.content.split(' ')[1]
-        await message.channel.send(f'{person.name} created a character named {chr_name}!')
+        text = f'{person.name} created a character named {chr_name}!'
+        await message.channel.send(text)
 
     if message.content.startswith('!roll'):
         person = message.author
