@@ -1,5 +1,4 @@
 import discord
-<<<<<<< HEAD
 import random
 import time
 
