@@ -1,4 +1,5 @@
 import discord
+<<<<<<< HEAD
 import random
 import time
 
@@ -75,3 +76,5 @@ async def on_message(message):
 
 
 client.run(MY_TOKEN)
+=======
+>>>>>>> 25fb4bac4adc152b8e7d787a11b49c5352dbeb28
