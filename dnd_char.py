@@ -50,43 +50,43 @@ class DnDCharacter():
             "wis",
             ]
 
-    skill_prof = [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            ]
-
     def __init__(self, name, _class, _str, dex, con, _int, wis, cha,
-                 prof_bonus=2, ):
+                 skill_profs=[], prof_bonus=2, speed=30, level=1, hit_die=6,
+                 hit_die_count=1):
+
+        self.skill_prof = [0 for _ in range(18)]
+        for i in skill_profs:
+            self.skill_prof[self.skill_index[i]] = 1
         self.name = name
         self.stats = [_str, dex, con, _int, wis, cha]
         self.stat_bonus = [(i-10) // 2 for i in self.stats]
+        self.initiative = self.stat_bonus[self.stat_index['dex']]
         self.saving_throws = [0 for _ in range(6)]
         self.prof_bonus = prof_bonus
         self.skills = []
 
-        for i in self.skill_base:
-            base = self.stat_bonus[self.stat_index[i]]
+        for i, s in enumerate(self.skill_base):
+            base = self.stat_bonus[self.stat_index[s]]
             bonus = self.skill_prof[i] * prof_bonus
 
             self.skills.append(base+bonus)
 
         self.class_ = _class
+        self.speed = speed
+        self.level = level
+        self.hit_die = hit_die
+        self.hit_die_max = hit_die_count
+        self.hit_die_curent = hit_die_count
+
+
+class DnDWeapon():
+    def __init__(self, name, base_stat, damage_die,
+                 damage_die_count=1, damage_type="Piercing"):
+        self.name = name
+        self.base_stat = base_stat
+        self.damage_die = damage_die
+        self.damage_die_count = damage_die_count
+        self.damgae_type = damage_type
 
 
 harper = DnDCharacter("Guelph", "Barbarian", 10, 13, 18, 9, 7, 17)
