@@ -81,7 +81,7 @@ class DnDCharacter():
         self.initiative = self.stat_bonus[self.stat_index['dex']]
         self.saving_throws = [0 for _ in range(6)]
         self.skill_bonus = [0 for _ in range(18)]
-
+        self.misc_profs = []
         self.prof_bonus = prof_bonus
         self.class_ = _class
         self.speed = speed
@@ -108,6 +108,8 @@ class DnDCharacter():
             return self.stat_bonus[self.stat_index[word]]
         elif word.lower() in self.skill_index:
             return self.skill_bonus[self.skill_index[word]]
+        elif word.lower() == 'prof' or word.lower() == 'proficiency':
+            return self.prof_bonus
         else:
             return "This is not a valid skill or stat"
 

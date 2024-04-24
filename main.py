@@ -29,6 +29,18 @@ async def hello(ctx):
     await ctx.send('Hello!')
 
 
+@bot.command(name='kill')
+async def kill_character(ctx):
+    message = ctx.message
+    words = message.content.split(' ')
+    chr_name = ' '.join(words[1:])
+    index = character_names.index(chr_name)
+    characters.pop(index)
+    character_names.pop(index)
+
+    await ctx.send(f'{chr_name} was removed and can no longer be accessed')
+
+
 @bot.command(name='new_character')
 async def new_character(ctx):
     message = ctx.message
