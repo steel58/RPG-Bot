@@ -46,6 +46,59 @@ async def new_character(ctx):
 
 
 @bot.command(name='roll')
+async def roll_switch(ctx):
+    message = ctx.message
+    words = message.content.lower().split(' ')
+
+    if len(words) == 2:
+        await roll(ctx)
+    elif len(words) > 2:
+        await trait_roll(ctx)
+    else:
+        await ctx.send("Your command was invalid, too few words.")
+
+
+async def trait_roll(ctx):
+    message = ctx.message
+    person = message.author
+    words = message.content.lower().split(' ')
+
+    multiplicity = int(words[1].split('d')[0])
+    die = int(words[1].split('d')[1])
+    d_max = max(die, 1)
+    d_min = min(die, 1)
+
+    stat_used = words[-1]
+    char_name = ' '.join(words[2:-1])
+
+    index = character_names.index(char_name)
+    character = characters[index]
+
+    bonus = character.get_bonus(stat_used)
+
+    if type(bonus) is str:
+        await ctx.send(bonus)
+        return
+
+    results = []
+
+    if bonus < 0:
+        sign = ''
+    else:
+        sign = '+'
+
+    await ctx.send(f'Rolling {words[1]} {sign} {bonus}')
+
+    for i in range(multiplicity):
+        roll = random.randint(d_min, d_max)
+        results.append(roll + bonus)
+        await ctx.send(f'{roll} {sign}{bonus}')
+        time.sleep(2.4)
+
+    text = f'{person} rolled a total of: {sum(results)}'
+    await ctx.send(text)
+
+
 async def roll(ctx):
     message = ctx.message
     person = message.author
