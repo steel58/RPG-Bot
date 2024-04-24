@@ -16,6 +16,18 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 characters = []
 character_names = []
+all_nicknames = dict()
+
+
+def get_character_index(name):
+    if name in character_names:
+        true_name = name
+    elif name in all_nicknames:
+        true_name = all_nicknames[name]
+    else:
+        return
+
+    return (true_name, character_names.index(true_name))
 
 
 @client.event
@@ -41,6 +53,29 @@ async def kill_character(ctx):
     await ctx.send(f'{chr_name} was removed and can no longer be accessed')
 
 
+@bot.command(name='nick')
+async def nick(ctx):
+    message = ctx.message
+    halfs = message.content.split('-')
+    first_words = halfs[0].split(' ')
+    real_name = ' '.join(first_words[1:]).strip()
+    nickname = halfs[1].strip()
+    tags = []
+    if len(halfs) > 2:
+        tags = [i.strip() for i in halfs[2:]]
+
+    if nickname in all_nicknames and 'f' not in tags and 'r' not in tags:
+        await ctx.send(f'Nickname {nickname} already exists, add -f to overwrite this name')
+    elif real_name not in character_names:
+        await ctx.send(f'A character named \"{real_name}\" does not exist')
+    elif 'r' in tags:
+        all_nicknames.pop(nickname)
+        await ctx.send(f'Nickname {nickname} was removed')
+    else:
+        all_nicknames[nickname] = real_name
+        await ctx.send(f'{real_name} now has nickname {nickname}')
+
+
 @bot.command(name='new_character')
 async def new_character(ctx):
     message = ctx.message
@@ -49,6 +84,7 @@ async def new_character(ctx):
 
     if character_names.count(chr_name) == 0:
         character_names.append(chr_name)
+        print(character_names)
         characters.append(dd.DnDCharacter(chr_name))
         text = f'{person.name} created a character named {chr_name}!'
     else:
@@ -83,7 +119,7 @@ async def trait_roll(ctx):
     stat_used = words[-1]
     char_name = ' '.join(words[2:-1])
 
-    index = character_names.index(char_name)
+    char_name, index = get_character_index(char_name)
     character = characters[index]
 
     bonus = character.get_bonus(stat_used)
@@ -166,7 +202,7 @@ async def strength(ctx):
     else:
         char_name = ' '.join(words[1:])
 
-    char_index = character_names.index(char_name)
+    char_name, char_index = get_character_index(char_name)
     if words[-1].isalpha():
         stat = characters[char_index].stats[0]
         bonus = characters[char_index].stat_bonus[0]
@@ -197,7 +233,7 @@ async def dexterity(ctx):
     else:
         char_name = ' '.join(words[1:])
 
-    char_index = character_names.index(char_name)
+    char_name, char_index = get_character_index(char_name)
     if words[-1].isalpha():
         stat = characters[char_index].stats[1]
         bonus = characters[char_index].stat_bonus[1]
@@ -228,7 +264,7 @@ async def consitution(ctx):
     else:
         char_name = ' '.join(words[1:])
 
-    char_index = character_names.index(char_name)
+    char_name, char_index = get_character_index(char_name)
     if words[-1].isalpha():
         stat = characters[char_index].stats[2]
         bonus = characters[char_index].stat_bonus[2]
@@ -259,7 +295,7 @@ async def intelegence(ctx):
     else:
         char_name = ' '.join(words[1:])
 
-    char_index = character_names.index(char_name)
+    char_name, char_index = get_character_index(char_name)
     if words[-1].isalpha():
         stat = characters[char_index].stats[3]
         bonus = characters[char_index].stat_bonus[3]
@@ -290,7 +326,7 @@ async def wisdom(ctx):
     else:
         char_name = ' '.join(words[1:])
 
-    char_index = character_names.index(char_name)
+    char_name, char_index = get_character_index(char_name)
     if words[-1].isalpha():
         stat = characters[char_index].stats[4]
         bonus = characters[char_index].stat_bonus[4]
@@ -321,7 +357,7 @@ async def charisma(ctx):
     else:
         char_name = ' '.join(words[1:])
 
-    char_index = character_names.index(char_name)
+    char_name, char_index = get_character_index(char_name)
     if words[-1].isalpha():
         stat = characters[char_index].stats[5]
         bonus = characters[char_index].stat_bonus[5]
