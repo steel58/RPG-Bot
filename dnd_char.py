@@ -70,7 +70,7 @@ class DnDCharacter():
             "wis",
             ]
 
-    def __init__(self, name, _class="", _str=0, dex=0, con=0, _int=0, wis=0,
+    def __init__(self, name="", _class="", _str=0, dex=0, con=0, _int=0, wis=0,
                  cha=0, skill_profs=[], prof_bonus=2, speed=30, level=1,
                  hit_die=6, hit_die_count=1):
 
@@ -112,6 +112,11 @@ class DnDCharacter():
             return self.prof_bonus
         else:
             return "This is not a valid skill or stat"
+
+    def from_dict(self, _dict):
+        for trait in _dict:
+            setattr(self, trait, _dict[trait])
+        return self
 
 
 class DnDWeapon():

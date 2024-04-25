@@ -3,6 +3,7 @@ from discord.ext import commands
 import random
 import time
 import dnd_char as dd
+import json_ops
 
 
 file = open('key.txt', 'r')
@@ -38,11 +39,11 @@ async def on_ready():
 @bot.command(name='commands')
 async def list_commands(ctx):
     text = """All commands start with "!", no brackets are needed for any command.
-Everything in {} is optional
+Everything in {} is an optional argument.
     "!kill (name)", this removes a character from memory, the character cannot be recovered.
 
     "!nick (name)-(nickname){-tags}", this nicknames the character in the computer.
-    !kill harper could be equvalent to !kill h.
+    ex) !kill harper could be equvalent to !kill h.
     -The "-r" tag removes a nickname.
     -The "-f" tag overides another players nickname and claims it as your own.
 
@@ -60,6 +61,10 @@ Everything in {} is optional
     -With a value of stat the new stat will be assigned to ones character for example !cha harper 15 would set harper's charisma to +2(15).
 
     "!alias", this command gives all skill aliases at current for example "acro" = acrobatics. Both "acro" and "acrobatics" work equally.
+
+    "!save", this saves the characters currently held in memory in a file.
+
+    "!load", this loads all the characters saved. This does not overwrite current characters created.
     """
 
     await ctx.send(text)
@@ -67,7 +72,6 @@ Everything in {} is optional
 
 @bot.command(name='hello')
 async def hello(ctx):
-    print("help me!")
     await ctx.send('Hello!')
 
 
@@ -159,7 +163,6 @@ async def new_character(ctx):
 
     if character_names.count(chr_name) == 0:
         character_names.append(chr_name)
-        print(character_names)
         characters.append(dd.DnDCharacter(chr_name))
         text = f'{person.name} created a character named {chr_name}!'
     else:
@@ -277,6 +280,8 @@ async def strength(ctx):
     else:
         char_name = ' '.join(words[1:])
 
+    print(char_name)
+    print(character_names)
     char_name, char_index = get_character_index(char_name)
     if words[-1].isalpha():
         stat = characters[char_index].stats[0]
@@ -451,6 +456,29 @@ async def charisma(ctx):
             sign = '+'
 
     await ctx.send(f'{char_name} has charisma {sign}{bonus}({stat})')
+
+
+@bot.command(name='save')
+async def save(ctx):
+    result = json_ops.save(character_names, characters)
+    if result == -1:
+        await ctx.send("Failed to save characters, try again later.")
+        return
+    await ctx.send("All character data saved")
+
+
+@bot.command(name='load')
+async def load(ctx):
+    (loaded_name, loaded_chars) = json_ops.load()
+    if None in character_names or None in characters:
+        await ctx.send("Failed to load characters.")
+        return
+
+    for name, char in zip(loaded_name, loaded_chars):
+        character_names.append(name)
+        characters.append(char)
+
+    await ctx.send("Saved characters now loaded.")
 
 
 @client.event
