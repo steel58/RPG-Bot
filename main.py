@@ -35,10 +35,85 @@ async def on_ready():
     print(f'We have logged in as {client.user}')
 
 
+@bot.command(name='commands')
+async def list_commands(ctx):
+    text = """All commands start with "!", no brackets are needed for any command.
+Everything in {} is optional
+    "!kill (name)", this removes a character from memory, the character cannot be recovered.
+
+    "!nick (name)-(nickname){-tags}", this nicknames the character in the computer.
+    !kill harper could be equvalent to !kill h.
+    -The "-r" tag removes a nickname.
+    -The "-f" tag overides another players nickname and claims it as your own.
+
+    "!new_character (name)", this creates a new character with the given name.
+
+    "!roll (n)d(m) {optional}, this rolls a d(m) die n times.
+    -The optional "drop (k)" key phrase removes the lowest k rolls from the total.
+    -The optional "(name) (attribute)" key phrase rolls each die with the given characters attribute. Attributes SHOULD (maybe not) be case InsensITIve
+    -Attributes are any stat or skill in D&D 5e. All stats are the first 3 letters ex) strength = str. To see all skill aliases type !ailias.
+
+    "!stat_gen", this rolls 4d6 drop 1 6 times and gives you all the results.
+
+    "!(stat) (name) {value}", this command accesses the characters stat. All stats are represented by their first 3 letters ex) dexterity = dex.
+    -With nothing in the place of value the characters stat will simply be displayed.
+    -With a value of stat the new stat will be assigned to ones character for example !cha harper 15 would set harper's charisma to +2(15).
+
+    "!alias", this command gives all skill aliases at current for example "acro" = acrobatics. Both "acro" and "acrobatics" work equally.
+    """
+
+    await ctx.send(text)
+
+
 @bot.command(name='hello')
 async def hello(ctx):
     print("help me!")
     await ctx.send('Hello!')
+
+
+@bot.command(name='alias')
+async def alias(ctx):
+    text = """acrobatics"
+-"acro"
+"animal handling"
+-"animal"
+-"anhan"
+"arcana"
+-"arc"
+"athletics"
+-"ath"
+"deception"
+-"dec"
+"history"
+-"his"
+"insight"
+-"ins"
+"intimidation"
+-"intim"
+"investigation"
+-"inv"
+"medicine"
+-"med"
+"nature"
+-"nat"
+"perception"
+-"perc"
+"performance"
+-"perf"
+"persuasion"
+-"pers"
+"religion"
+-"rel"
+"slight of hand"
+-"slight"
+-"soh"
+"stealth"
+-"stl"
+"survival"
+-"sur"
+"""
+
+    await ctx.send(text)
 
 
 @bot.command(name='kill')
