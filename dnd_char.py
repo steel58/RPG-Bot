@@ -72,7 +72,7 @@ class DnDCharacter():
 
     def __init__(self, name="", _class="", _str=0, dex=0, con=0, _int=0, wis=0,
                  cha=0, skill_profs=[], prof_bonus=2, speed=30, level=1,
-                 hit_die=6, hit_die_count=1):
+                 hit_die=6, hit_die_count=1, health=1):
 
         self.skill_prof = [0 for _ in range(18)]
         self.name = name
@@ -89,6 +89,7 @@ class DnDCharacter():
         self.hit_die = hit_die
         self.hit_die_max = hit_die_count
         self.hit_die_curent = hit_die_count
+        self.health = self.hit_die + self.stat_bonus[2]
 
     def set_stat(self, stat_name, stat_value):
         index = self.stat_index[stat_name]
