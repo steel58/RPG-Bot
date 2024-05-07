@@ -15,20 +15,19 @@ intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-characters = []
-character_names = []
+characters = dict()
 all_nicknames = dict()
 
 
 def get_character_index(name):
-    if name in character_names:
+    if name in characters:
         true_name = name
     elif name in all_nicknames:
         true_name = all_nicknames[name]
     else:
         return
 
-    return (true_name, character_names.index(true_name))
+    return (true_name, characters[true_name])
 
 
 @client.event
@@ -125,9 +124,11 @@ async def kill_character(ctx):
     message = ctx.message
     words = message.content.split(' ')
     chr_name = ' '.join(words[1:])
-    index = character_names.index(chr_name)
-    characters.pop(index)
-    character_names.pop(index)
+    if chr_name not in characters:
+        await ctx.send(f'No character \"{chr_name}\" exists.')
+        return
+
+    characters.pop(chr_name)
 
     await ctx.send(f'{chr_name} was removed and can no longer be accessed')
 
@@ -145,7 +146,7 @@ async def nick(ctx):
 
     if nickname in all_nicknames and 'f' not in tags and 'r' not in tags:
         await ctx.send(f'Nickname {nickname} already exists, add -f to overwrite this name')
-    elif real_name not in character_names:
+    elif real_name not in characters:
         await ctx.send(f'A character named \"{real_name}\" does not exist')
     elif 'r' in tags:
         all_nicknames.pop(nickname)
@@ -161,9 +162,8 @@ async def new_character(ctx):
     person = message.author
     chr_name = ' '.join(message.content.split(' ')[1:])
 
-    if character_names.count(chr_name) == 0:
-        character_names.append(chr_name)
-        characters.append(dd.DnDCharacter(chr_name))
+    if chr_name not in characters:
+        characters[chr_name] = dd.DnDCharacter(chr_name)
         text = f'{person.name} created a character named {chr_name}!'
     else:
         text = f'A character named {chr_name} already exists. If you wish to create a new character type "!kill {chr_name}" and then try again.'
@@ -197,8 +197,7 @@ async def trait_roll(ctx):
     stat_used = words[-1]
     char_name = ' '.join(words[2:-1])
 
-    char_name, index = get_character_index(char_name)
-    character = characters[index]
+    character = characters[char_name]
 
     bonus = character.get_bonus(stat_used)
 
@@ -272,195 +271,67 @@ async def stat_gen(ctx):
 
 @bot.command(name='str')
 async def strength(ctx):
-    message = ctx.message
-    contents = message.content
-    words = contents.split(' ')
-    if words[1:-1]:
-        char_name = ' '.join(words[1:-1])
-    else:
-        char_name = ' '.join(words[1:])
-
-    print(char_name)
-    print(character_names)
-    char_name, char_index = get_character_index(char_name)
-    if words[-1].isalpha():
-        stat = characters[char_index].stats[0]
-        bonus = characters[char_index].stat_bonus[0]
-
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
-    else:
-        stat = int(words[-1])
-        characters[char_index].set_stat('str', stat)
-        bonus = characters[char_index].stat_bonus[0]
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
-
-    await ctx.send(f'{char_name} has strength {sign}{bonus}({stat})')
+    await stat(ctx, 'str')
 
 
 @bot.command(name='dex')
 async def dexterity(ctx):
-    message = ctx.message
-    contents = message.content
-    words = contents.split(' ')
-    if words[1:-1]:
-        char_name = ' '.join(words[1:-1])
-    else:
-        char_name = ' '.join(words[1:])
-
-    char_name, char_index = get_character_index(char_name)
-    if words[-1].isalpha():
-        stat = characters[char_index].stats[1]
-        bonus = characters[char_index].stat_bonus[1]
-
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
-    else:
-        stat = int(words[-1])
-        characters[char_index].set_stat('dex', stat)
-        bonus = characters[char_index].stat_bonus[1]
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
-
-    await ctx.send(f'{char_name} has dexterity {sign}{bonus}({stat})')
+    await stat(ctx, 'dex')
 
 
 @bot.command(name='con')
 async def consitution(ctx):
-    message = ctx.message
-    contents = message.content
-    words = contents.split(' ')
-    if words[1:-1]:
-        char_name = ' '.join(words[1:-1])
-    else:
-        char_name = ' '.join(words[1:])
-
-    char_name, char_index = get_character_index(char_name)
-    if words[-1].isalpha():
-        stat = characters[char_index].stats[2]
-        bonus = characters[char_index].stat_bonus[2]
-
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
-    else:
-        stat = int(words[-1])
-        characters[char_index].set_stat('con', stat)
-        bonus = characters[char_index].stat_bonus[2]
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
-
-    await ctx.send(f'{char_name} has consitution {sign}{bonus}({stat})')
+    await stat(ctx, 'con')
 
 
 @bot.command(name='int')
 async def intelegence(ctx):
-    message = ctx.message
-    contents = message.content
-    words = contents.split(' ')
-    if words[1:-1]:
-        char_name = ' '.join(words[1:-1])
-    else:
-        char_name = ' '.join(words[1:])
-
-    char_name, char_index = get_character_index(char_name)
-    if words[-1].isalpha():
-        stat = characters[char_index].stats[3]
-        bonus = characters[char_index].stat_bonus[3]
-
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
-    else:
-        stat = int(words[-1])
-        characters[char_index].set_stat('int', stat)
-        bonus = characters[char_index].stat_bonus[3]
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
-
-    await ctx.send(f'{char_name} has intelegence {sign}{bonus}({stat})')
+    await stat(ctx, 'int')
 
 
 @bot.command(name='wis')
 async def wisdom(ctx):
-    message = ctx.message
-    contents = message.content
-    words = contents.split(' ')
-    if words[1:-1]:
-        char_name = ' '.join(words[1:-1])
-    else:
-        char_name = ' '.join(words[1:])
-
-    char_name, char_index = get_character_index(char_name)
-    if words[-1].isalpha():
-        stat = characters[char_index].stats[4]
-        bonus = characters[char_index].stat_bonus[4]
-
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
-    else:
-        stat = int(words[-1])
-        characters[char_index].set_stat('wis', stat)
-        bonus = characters[char_index].stat_bonus[4]
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
-
-    await ctx.send(f'{char_name} has wisdom {sign}{bonus}({stat})')
+    await stat(ctx, 'wis')
 
 
 @bot.command(name='cha')
 async def charisma(ctx):
+    await stat(ctx, 'cha')
+
+
+async def stat(ctx, stat):
     message = ctx.message
     contents = message.content
     words = contents.split(' ')
-    if words[1:-1]:
-        char_name = ' '.join(words[1:-1])
-    else:
+    if words[-1].is_alpha():
         char_name = ' '.join(words[1:])
+        character = characters[char_name]
+        index = character.stat_index[stat]
 
-    char_name, char_index = get_character_index(char_name)
-    if words[-1].isalpha():
-        stat = characters[char_index].stats[5]
-        bonus = characters[char_index].stat_bonus[5]
-
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
+        stat_value = character.stats[index]
+        bonus = character.stat_bonus[index]
     else:
-        stat = int(words[-1])
-        characters[char_index].set_stat('cha', stat)
-        bonus = characters[char_index].stat_bonus[5]
-        if bonus < 0:
-            sign = ''
-        else:
-            sign = '+'
+        char_name = ' '.join(words[1:-1])
+        character = characters[char_name]
+        index = character.stat_index[stat]
 
-    await ctx.send(f'{char_name} has charisma {sign}{bonus}({stat})')
+        stat_value = int(words[-1])
+        character.set_stat(stat, stat_value)
+        bonus = character.stat_bonus[stat]
+
+        characters[char_name] = character
+
+    if bonus < 0:
+        sign = ''
+    else:
+        sign = '+'
+
+    await ctx.send(f'{char_name} has {stat} of {sign}{bonus}({stat_value})')
 
 
 @bot.command(name='save')
 async def save(ctx):
-    result = json_ops.save(character_names, characters)
+    result = json_ops.save(characters)
     if result == -1:
         await ctx.send("Failed to save characters, try again later.")
         return
@@ -470,12 +341,11 @@ async def save(ctx):
 @bot.command(name='load')
 async def load(ctx):
     (loaded_name, loaded_chars) = json_ops.load()
-    if None in character_names or None in characters:
+    if None in characters:
         await ctx.send("Failed to load characters.")
         return
 
     for name, char in zip(loaded_name, loaded_chars):
-        character_names.append(name)
         characters.append(char)
 
     await ctx.send("Saved characters now loaded.")

@@ -72,7 +72,7 @@ class DnDCharacter():
 
     def __init__(self, name="", _class="", _str=0, dex=0, con=0, _int=0, wis=0,
                  cha=0, skill_profs=[], prof_bonus=2, speed=30, level=1,
-                 hit_die=6, hit_die_count=1, health=1):
+                 hit_die=6, hit_die_count=1, health=1, character_render='&'):
 
         self.skill_prof = [0 for _ in range(18)]
         self.name = name
