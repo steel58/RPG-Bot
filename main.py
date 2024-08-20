@@ -4,7 +4,7 @@ import random
 import time
 import dnd_char as dd
 import json_ops
-
+import kitty_sheet as kit
 
 file = open('key.txt', 'r')
 MY_TOKEN = file.read()
@@ -280,8 +280,6 @@ async def strength(ctx):
     else:
         char_name = ' '.join(words[1:])
 
-    print(char_name)
-    print(character_names)
     char_name, char_index = get_character_index(char_name)
     if words[-1].isalpha():
         stat = characters[char_index].stats[0]
@@ -479,6 +477,81 @@ async def load(ctx):
         characters.append(char)
 
     await ctx.send("Saved characters now loaded.")
+
+
+@bot.command(name='new_kitty')
+async def new_kitty(ctx):
+    message = ctx.message
+    person = message.author
+    chr_name = ' '.join(message.content.split(' ')[1:])
+    if character_names.count(chr_name) == 0:
+        character_names.append(chr_name)
+        characters.append(kit.KittySheet(chr_name))
+        text = f'{person.name} created a character named {chr_name}!'
+    else:
+        text = f'A character named {chr_name} already exists.'
+
+    await ctx.send(text)
+
+
+@bot.command(name='cute')
+async def cute(ctx):
+    message = ctx.message
+    contents = message.content
+    words = contents.split(' ')
+    if words[1:-1]:
+        char_name = ' '.join(words[1:-1])
+    else:
+        char_name = ' '.join(words[1:])
+
+    char_name, char_index = get_character_index(char_name)
+    if words[-1].isalpha():
+        stat = characters[char_index].cute
+    else:
+        stat = int(words[-1])
+        characters[char_index].set_cute(stat)
+
+    await ctx.send(f'{char_name} has cute of {stat}')
+
+
+@bot.command(name='fierce')
+async def fierce(ctx):
+    message = ctx.message
+    contents = message.content
+    words = contents.split(' ')
+    if words[1:-1]:
+        char_name = ' '.join(words[1:-1])
+    else:
+        char_name = ' '.join(words[1:])
+
+    char_name, char_index = get_character_index(char_name)
+    if words[-1].isalpha():
+        stat = characters[char_index].fierce
+    else:
+        stat = int(words[-1])
+        characters[char_index].set_fierce(stat)
+
+    await ctx.send(f'{char_name} has fierce of {stat}')
+
+
+@bot.command(name='cunning')
+async def cunning(ctx):
+    message = ctx.message
+    contents = message.content
+    words = contents.split(' ')
+    if words[1:-1]:
+        char_name = ' '.join(words[1:-1])
+    else:
+        char_name = ' '.join(words[1:])
+
+    char_name, char_index = get_character_index(char_name)
+    if words[-1].isalpha():
+        stat = characters[char_index].cunning
+    else:
+        stat = int(words[-1])
+        characters[char_index].set_cunning(stat)
+
+    await ctx.send(f'{char_name} has cunning of {stat}')
 
 
 @client.event
