@@ -12,7 +12,7 @@ class KittySheet():
     def hurt_kitty(self, damage):
         self.owies += damage
         if self.owie_limit < self.owies:
-            self.owies = self.owie_limit
+            self.owies = 0
             self.injuries += 1
 
     def set_cute(self, stat):
