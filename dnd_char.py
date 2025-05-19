@@ -79,6 +79,7 @@ class DnDCharacter():
         self.stats = [_str, dex, con, _int, wis, cha]
         self.stat_bonus = [(i-10) // 2 for i in self.stats]
         self.initiative = self.stat_bonus[self.stat_index['dex']]
+        self.pasive_perception = self.stat_bonus[self.stat_index['wis']] + prof_bonus + 10;
         self.saving_throws = [0 for _ in range(6)]
         self.skill_bonus = [0 for _ in range(18)]
         self.misc_profs = []
@@ -90,11 +91,38 @@ class DnDCharacter():
         self.hit_die_max = hit_die_count
         self.hit_die_curent = hit_die_count
         self.health = self.hit_die + self.stat_bonus[2]
+        self.background = ""
+        self.player_name = ""
+        self.race = ""
+        self.xp = 0
+        self.personality = []
+        self.ideals = []
+        self.bonds = []
+        self.flaws = []
+        self.copper = 0
+        self.silver = 0
+        self.gold = 0
+        self.electrum = 0
+        self.platinum = 0
+        self.spell_slots = [0 for _ in range(9)]
+        self.spells_cantrip = []
+        self.spells_lvl1 = []
+        self.spells_lvl2 = []
+        self.spells_lvl3 = []
+        self.spells_lvl4 = []
+        self.spells_lvl5 = []
+        self.spells_lvl6 = []
+        self.spells_lvl7 = []
+        self.spells_lvl8 = []
+        self.spells_lvl9 = []
 
     def set_stat(self, stat_name, stat_value):
         index = self.stat_index[stat_name]
         self.stats[index] = stat_value
         self.stat_bonus[index] = (stat_value - 10) // 2
+        if stat_name == 'wis':
+            self.pasive_perception = self.stat_bonus[self.stat_index['wis']] + self.prof_bonus + 10;
+
         self.update_skills(stat_name)
 
     def update_skills(self, base_stat):
@@ -119,6 +147,61 @@ class DnDCharacter():
             setattr(self, trait, _dict[trait])
         return self
 
+    copper_convert = {
+            'c': 1
+            's': 0.1
+            'e': 0.02
+            'g': 0.01
+            'p': 0.001
+            }
+
+    silver_convert = {
+            'c': 10
+            's': 1
+            'e': 0.2
+            'g': 0.1
+            'p': 0.01
+            }
+
+    electrum_convert = {
+            'c': 50
+            's': 5
+            'e': 1
+            'g': 0.5
+            'p': 0.05
+            }
+
+    gold_convert = {
+            'c': 100
+            's': 10
+            'e': 2
+            'g': 1
+            'p': 0.1
+            }
+
+    platinum_convert = {
+            'c': 1000
+            's': 100
+            'e': 50
+            'g': 10
+            'p': 1
+            }
+
+    def currency_convert(count, start, finish):
+        if start.lower()[0] == c:
+            return copper_convert[finish.lower()[0]] * count
+        elif start.lower()[0] == s:
+            return silver_convert[finish.lower()[0]] * count
+        elif start.lower()[0] == e:
+            return electrum_convert[finish.lower()[0]] * count
+        elif start.lower()[0] == g:
+            return gold_convert[finish.lower()[0]] * count
+        elif start.lower()[0] == p:
+            return platinum_convert[finish.lower()[0]] * count
+        else:
+            return None
+        
+
 
 class DnDWeapon():
     def __init__(self, name, base_stat, damage_die,
@@ -128,9 +211,3 @@ class DnDWeapon():
         self.damage_die = damage_die
         self.damage_die_count = damage_die_count
         self.damage_type = damage_type
-
-
-if __name__ == "__main__":
-    harper = DnDCharacter("Guelph", "Barbarian", 10, 13, 18, 9, 7, 17)
-
-    print(len(harper.skill_prof))
